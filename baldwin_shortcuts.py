@@ -31,12 +31,15 @@ def convert_size(size_bytes):
 
 # this function will dry run a BigQuery query
 def bigquery_dryrun(client,sql):
-    job_config = bigquery.QueryJobConfig(dry_run=True, use_query_cache=False)
+    job_config = bigquery.QueryJobConfig(dry_run=True, use_query_cache=True)
     # Start the query, passing in the extra configuration.
     query_job = client.query(sql,
         job_config=job_config,
     )  # Make an API request.
     if query_job.errors == None:
-        return "This query will process {}.".format(convert_size(query_job.total_bytes_processed))
+        if query_job == None:
+            return "This query will process 0B."
+        else:
+            return "This query will process {}.".format(convert_size(query_job.total_bytes_processed))
     else:
         raise NotImplementedError(f"Query Error: {query_job.errors}")
